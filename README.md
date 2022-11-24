@@ -1,1 +1,1 @@
-# tension-igc
+# Tension Image Generation Controller
