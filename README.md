@@ -1,1 +1,1 @@
-# Tension: Image Generation Controller
+# Tension Sample
