@@ -23,38 +23,43 @@ def RenderComponents(sample,components):
             sample = CV.rectangle(sample,topLeft,topRight,Colour.Render(component["colour"]),-1)
         else:
             middle = Grid.GetCircleCoordinates(component["points"])
-            print(middle)
             sample = CV.circle(sample,middle,component["radius"],Colour.Render(component["colour"]),-1)
 
     return sample
 
+def RenderImage(sample):
+    image = NewSample()
+    for x in range(0,128):
+        for y in range(0,128):
+            image[x][y] = Colour.ConvertToRGB(sample[x][y])
+    return image
+
 sample = NewSample()
 backgroundColour = "black"
 components = []
+
 while True:
+
     description = input("> ")
-    newBackgroundColour, newComponents = Language.Parse(description)
-    if newBackgroundColour is not None:
-        backgroundColour = newBackgroundColour
-    components.extend(newComponents)
-    sample = RenderBackground(sample,backgroundColour)
-    sample = RenderComponents(sample,components)
-    CV.imshow("image",sample)
-    CV.waitKey(33)
+    if description == "save":
+        imageName = input("Save Name > ")
+        image = RenderImage(sample)
+        CV.imwrite("output/" + imageName + ".png",image)
+        sample = NewSample()
+        components = []
+        backgroundColour = "black"
+
+    else:
+
+        newBackgroundColour, newComponents = Language.Parse(description)
+        if newBackgroundColour is not None:
+            backgroundColour = newBackgroundColour
+        components.extend(newComponents)
+        sample = RenderBackground(sample,backgroundColour)
+        sample = RenderComponents(sample,components)
+
+    imS = CV.resize(sample, (512, 512))         
+    CV.imshow("output", imS)        
+    CV.waitKey(300)    
 
 
-
-# print("# Background Colour:",backgroundColour)
-# print("--------------------------")
-
-# for component in components:
-#     print("# Component")
-#     print("Shape:",component["shape"])
-#     print("Colour:",component["colour"])
-#     if component["shape"] == "circle":
-#         print("Point:",component["points"][0])
-#         print("Radius:",component["radius"])
-#     else:
-#         print("Start Point:",component["points"][0])
-#         print("End Point:",component["points"][1])
-#     print("--------------------------")

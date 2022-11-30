@@ -21,7 +21,6 @@ def GetCircleCoordinates(points):
     topLeft,bottomRight = GetRectangleCoordinates([points[0],points[0]])
     middleX = bottomRight[0] - (bottomRight[0] - topLeft[0]) // 2
     middleY = bottomRight[1] - (bottomRight[1] - topLeft[1]) // 2
-    print(middleX,middleY)
     return (middleX, middleY)
 
     
