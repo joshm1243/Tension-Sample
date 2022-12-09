@@ -1,26 +1,45 @@
-GRID_LINES = {
-    "A" : (0,13),
-    "B" : (14,33),
-    "C" : (34,53),
-    "D" : (54,73),
-    "E" : (74,93),
-    "F" : (94,113),
-    "G" : (114,127)
-}
+import cv2 as cv
+import numpy as np
 
-def GetRectangleCoordinates(points):
-    yTop = GRID_LINES[points[0][1]][0]
-    yBottom = GRID_LINES[points[1][1]][1]
-    xLeft = GRID_LINES[points[0][0]][0]
-    xRight = GRID_LINES[points[1][0]][1]
-    topLeft = (xLeft,yTop)
-    bottomRight = (xRight,yBottom)
-    return topLeft,bottomRight
+def CreateScaleSquare(sample,component):
+    sample = cv.rectangle(sample,component["startCoordinate"],component["endCoordinate"],component["colourScale"],-1)
+    return sample
 
-def GetCircleCoordinates(points):
-    topLeft,bottomRight = GetRectangleCoordinates([points[0],points[0]])
-    middleX = bottomRight[0] - (bottomRight[0] - topLeft[0]) // 2
-    middleY = bottomRight[1] - (bottomRight[1] - topLeft[1]) // 2
-    return (middleX, middleY)
+def CreateRGBSquare(sample,component):
+    sample = cv.rectangle(sample,component["startCoordinate"],component["endCoordinate"],component["colourRGB"],-1)
+    return sample
 
+def Display(components):
+
+    sample = np.zeros((140,140,3))
+
+    for component in components:
+        if component["type"] == "background":
+            sample = CreateScaleSquare(sample,component)
     
+    for component in components:
+        if component["type"] == "square":
+            sample = CreateScaleSquare(sample,component)
+
+    sample = cv.resize(sample, (512, 512))   
+    cv.imshow("Tension Sample",sample)
+    cv.waitKey(300)
+
+
+def Save(components,filePath):
+
+    errorMessage = ""
+
+    sample = np.zeros((140,140,3))
+
+    for component in components:
+        if component["type"] == "background":
+            sample = CreateRGBSquare(sample,component)
+    
+    for component in components:
+        if component["type"] == "square":
+            sample = CreateRGBSquare(sample,component)
+
+    cv.imwrite(filePath,sample)
+
+    return errorMessage
